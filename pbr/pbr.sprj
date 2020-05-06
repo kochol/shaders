@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<project version="2">
+	<pipeline>
+		<pass name="pbr" type="shader" active="true">
+			<shader type="vs" path="shaders\pbr_vs.glsl" entry="main" />
+			<shader type="ps" path="shaders\pbr_ps.glsl" entry="main" />
+			<inputlayout>
+				<item value="Position" semantic="POSITION" />
+				<item value="Normal" semantic="NORMAL" />
+				<item value="Texcoord" semantic="TEXCOORD0" />
+				<item value="Tangent" semantic="TANGENT" />
+				<item value="Bitangent" semantic="BITANGENT" />
+			</inputlayout>
+			<rendertexture />
+			<items>
+				<item name="s1" type="geometry">
+					<type>Sphere</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<z>-3.19025421</z>
+					<topology>TriangleList</topology>
+				</item>
+				<item name="dh" type="model">
+					<filepath>..\..\..\glTF-Sample-Models\2.0\DamagedHelmet\glTF\DamagedHelmet.gltf</filepath>
+					<grouponly>false</grouponly>
+					<yaw>0.185179427</yaw>
+					<z>1.05006981</z>
+				</item>
+			</items>
+			<itemvalues />
+			<variables>
+				<variable type="float4x4" name="matVP" system="ViewProjection" />
+				<variable type="float4x4" name="matGeo" system="GeometryTransform" />
+				<variable type="float3" name="albedo">
+					<row>
+						<value>0</value>
+						<value>0.803088665</value>
+						<value>1</value>
+					</row>
+				</variable>
+				<variable type="float" name="metallic">
+					<row>
+						<value>0.289999992</value>
+					</row>
+				</variable>
+				<variable type="float" name="roughness">
+					<row>
+						<value>0.330000013</value>
+					</row>
+				</variable>
+				<variable type="float" name="ao">
+					<row>
+						<value>1</value>
+					</row>
+				</variable>
+				<variable type="float3" name="lightPositions" function="ObjectProperty">
+					<row>
+						<value>light1</value>
+						<value>Position</value>
+					</row>
+				</variable>
+				<variable type="float3" name="lightColors">
+					<row>
+						<value>0.999989986</value>
+						<value>0.999995947</value>
+						<value>1</value>
+					</row>
+				</variable>
+				<variable type="float3" name="camPos" system="CameraPosition3" />
+			</variables>
+			<macros />
+		</pass>
+		<pass name="lights" type="shader" active="true">
+			<shader type="vs" path="..\phong\shaders\basic_vs.glsl" entry="main" />
+			<shader type="ps" path="..\phong\shaders\basic_ps.glsl" entry="main" />
+			<inputlayout>
+				<item value="Position" semantic="POSITION" />
+				<item value="Normal" semantic="NORMAL" />
+				<item value="Texcoord" semantic="TEXCOORD0" />
+			</inputlayout>
+			<rendertexture />
+			<items>
+				<item name="light1" type="geometry">
+					<type>Sphere</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<x>3.42103076</x>
+					<y>-0.340534687</y>
+					<z>-0.97740972</z>
+					<topology>TriangleList</topology>
+				</item>
+			</items>
+			<itemvalues />
+			<variables>
+				<variable type="float3" name="lightColor">
+					<row>
+						<value>1</value>
+						<value>0.999989986</value>
+						<value>0.999989986</value>
+					</row>
+				</variable>
+				<variable type="float4x4" name="matGeo" system="GeometryTransform" />
+				<variable type="float4x4" name="matVP" system="ViewProjection" />
+			</variables>
+			<macros />
+		</pass>
+	</pipeline>
+	<objects>
+		<object type="texture" path="..\..\..\glTF-Sample-Models\2.0\DamagedHelmet\glTF\Default_albedo.jpg" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat">
+			<bind slot="0" name="pbr" />
+		</object>
+		<object type="texture" path="..\..\..\glTF-Sample-Models\2.0\DamagedHelmet\glTF\Default_AO.jpg" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat" />
+		<object type="texture" path="..\..\..\glTF-Sample-Models\2.0\DamagedHelmet\glTF\Default_emissive.jpg" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat" />
+		<object type="texture" path="..\..\..\glTF-Sample-Models\2.0\DamagedHelmet\glTF\Default_metalRoughness.jpg" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat" />
+		<object type="texture" path="..\..\..\glTF-Sample-Models\2.0\DamagedHelmet\glTF\Default_normal.jpg" vflip="false" min_filter="Linear" mag_filter="Nearest" wrap_s="Repeat" wrap_t="Repeat" />
+	</objects>
+	<cameras />
+	<settings>
+		<entry type="property" name="pbr" item="pipe" />
+		<entry type="file" name="pbr" shader="vs" />
+		<entry type="file" name="pbr" shader="ps" />
+		<entry type="pinned" name="albedo" owner="pbr" />
+		<entry type="pinned" name="metallic" owner="pbr" />
+		<entry type="pinned" name="roughness" owner="pbr" />
+		<entry type="pinned" name="ao" owner="pbr" />
+		<entry type="pinned" name="lightColors" owner="pbr" />
+		<entry type="camera" fp="false">
+			<distance>12</distance>
+			<pitch>10</pitch>
+			<yaw>330</yaw>
+			<roll>360</roll>
+		</entry>
+		<entry type="clearcolor" r="0.370656371" g="0.370652646" b="0.370652646" a="0" />
+		<entry type="usealpha" val="false" />
+	</settings>
+</project>
