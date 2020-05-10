@@ -12,13 +12,13 @@ uniform float ao;
 // lights
 uniform vec3 lightPositions;
 uniform vec3 lightColors;
-
+uniform vec3 albedo;
 uniform vec3 camPos;
 
 uniform sampler2D texAlbedo;
 
 const float PI = 3.14159265359;
-  
+// ----------------------------------------------------------------------------
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
     float a      = roughness*roughness;
@@ -26,11 +26,11 @@ float DistributionGGX(vec3 N, vec3 H, float roughness)
     float NdotH  = max(dot(N, H), 0.0);
     float NdotH2 = NdotH*NdotH;
 	
-    float num   = a2;
+    float nom   = a2;
     float denom = (NdotH2 * (a2 - 1.0) + 1.0);
     denom = PI * denom * denom;
 	
-    return num / denom;
+    return nom / max(denom, 0.001); // prevent divide by zero for roughness=0.0 and NdotH=1.0
 }
 
 float GeometrySchlickGGX(float NdotV, float roughness)
@@ -38,10 +38,10 @@ float GeometrySchlickGGX(float NdotV, float roughness)
     float r = (roughness + 1.0);
     float k = (r*r) / 8.0;
 
-    float num   = NdotV;
+    float nom   = NdotV;
     float denom = NdotV * (1.0 - k) + k;
 	
-    return num / denom;
+    return nom / denom;
 }
 
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
@@ -61,7 +61,6 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 
 void main()
 {		
-    vec3  albedo = texture(texAlbedo, TexCoords).rgb;
     vec3 N = normalize(Normal);
     vec3 V = normalize(camPos - WorldPos);
 
@@ -80,16 +79,16 @@ void main()
         // cook-torrance brdf
         float NDF = DistributionGGX(N, H, roughness);        
         float G   = GeometrySmith(N, V, L, roughness);      
-        vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);       
+        vec3 F    = fresnelSchlick(clamp(dot(H, V), 0.0, 1.0), F0);       
+	     
+        vec3 nominator    = NDF * G * F;
+        float denominator = 8 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+        vec3 specular     = nominator / max(denominator, 0.001);  
         
         vec3 kS = F;
         vec3 kD = vec3(1.0) - kS;
         kD *= 1.0 - metallic;	  
-        
-        vec3 numerator    = NDF * G * F;
-        float denominator = 1.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
-        vec3 specular     = numerator / max(denominator, 0.001);  
-            
+             
         // add to outgoing radiance Lo
         float NdotL = max(dot(N, L), 0.0);                
         Lo += (kD * albedo / PI + specular) * radiance * NdotL; 
@@ -100,5 +99,5 @@ void main()
     color = color / (color + vec3(1.0));
     color = pow(color, vec3(1.0/2.2));  
    
-    FragColor = vec4(TexCoords.y,0,0.0, 1.0);
+    FragColor = vec4(color, 1.0);
 }  

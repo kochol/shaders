@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<project version="2">
+	<pipeline>
+		<pass name="Scene" type="shader" active="true">
+			<shader type="vs" path="shaders\water_SimpleVS.glsl" entry="main" />
+			<shader type="ps" path="shaders\water_SimplePS.glsl" entry="main" />
+			<inputlayout>
+				<item value="Position" semantic="POSITION" />
+				<item value="Normal" semantic="NORMAL" />
+				<item value="Texcoord" semantic="TEXCOORD0" />
+			</inputlayout>
+			<rendertexture name="RT" />
+			<items>
+				<item name="S1" type="geometry">
+					<type>Sphere</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<topology>TriangleList</topology>
+				</item>
+			</items>
+			<itemvalues />
+			<variables>
+				<variable type="float4x4" name="matVP" system="ViewProjection" />
+				<variable type="float4x4" name="matGeo" system="GeometryTransform" />
+			</variables>
+			<macros />
+		</pass>
+		<pass name="Water" type="shader" active="true">
+			<shader type="vs" path="shaders\water.vs.glsl" entry="main" />
+			<shader type="ps" path="shaders\water.fs.glsl" entry="main" />
+			<inputlayout>
+				<item value="Position" semantic="POSITION" />
+				<item value="Normal" semantic="NORMAL" />
+				<item value="Texcoord" semantic="TEXCOORD0" />
+			</inputlayout>
+			<rendertexture />
+			<items>
+				<item name="water_plane" type="geometry">
+					<type>Plane</type>
+					<width>10</width>
+					<height>10</height>
+					<depth>1</depth>
+					<pitch>1.57079637</pitch>
+					<topology>TriangleList</topology>
+				</item>
+				<item name="scene_quad" type="geometry">
+					<type>ScreenQuadNDC</type>
+					<width>1</width>
+					<height>1</height>
+					<depth>1</depth>
+					<topology>TriangleList</topology>
+				</item>
+			</items>
+			<itemvalues />
+			<variables>
+				<variable type="float4x4" name="matVP" system="ViewProjection" />
+				<variable type="float4x4" name="matGeo" system="GeometryTransform" />
+			</variables>
+			<macros />
+		</pass>
+		<pass name="SceneToWindow" type="shader" active="true">
+			<shader type="vs" path="..\test_scq_SimpleVS.glsl" entry="main" />
+			<shader type="ps" path="..\test_scq_SimplePS.glsl" entry="main" />
+			<inputlayout>
+				<item value="Position" semantic="POSITION" />
+				<item value="Normal" semantic="NORMAL" />
+				<item value="Texcoord" semantic="TEXCOORD0" />
+			</inputlayout>
+			<rendertexture />
+			<items />
+			<itemvalues />
+			<macros />
+		</pass>
+	</pipeline>
+	<objects>
+		<object type="rendertexture" name="RT" fsize="1323,741" clear="true">
+			<bind slot="0" name="Water" />
+		</object>
+	</objects>
+	<cameras />
+	<settings>
+		<entry type="property" name="SceneToWindow" item="pipe" />
+		<entry type="file" name="SceneToWindow" shader="vs" />
+		<entry type="file" name="SceneToWindow" shader="ps" />
+		<entry type="camera" fp="false">
+			<distance>16</distance>
+			<pitch>23</pitch>
+			<yaw>161</yaw>
+			<roll>360</roll>
+		</entry>
+		<entry type="clearcolor" r="0" g="0" b="0" a="0" />
+		<entry type="usealpha" val="false" />
+	</settings>
+</project>
